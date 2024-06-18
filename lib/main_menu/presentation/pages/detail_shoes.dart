@@ -1,16 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uas_pemmob/main_menu/domain/entities/product.dart';
+import 'package:uas_pemmob/main_menu/presentation/bloc/remote/remote_product_bloc.dart';
+import 'package:uas_pemmob/main_menu/presentation/bloc/remote/remote_product_event.dart';
 
 class DetailShoes extends StatefulWidget {
-  const DetailShoes({super.key});
+  final ProductEntity product;
+
+  const DetailShoes({super.key, required this.product});
 
   @override
   State<DetailShoes> createState() => _DetailShoesState();
 }
 
 class _DetailShoesState extends State<DetailShoes> {
+  late String productId;
+
+  @override
+  void initState() {
+    super.initState();
+    print(widget.product.id);
+    setState(() {
+      productId = widget.product.id;
+    });
+    print(productId);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final product = widget.product;
+    print(product.id);
     return Scaffold(
       appBar: AppBar(
         title: Image.asset('assets/logo.png', height: 30),
@@ -27,9 +46,17 @@ class _DetailShoesState extends State<DetailShoes> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.black,
-                  image: const DecorationImage(
-                    image: AssetImage('assets/kids.png'),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white,
+                      Colors.grey.shade200,
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                  image: DecorationImage(
+                    image: NetworkImage(
+                        product.image), // Gunakan URL gambar dari produk
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -40,12 +67,24 @@ class _DetailShoesState extends State<DetailShoes> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0, left: 8.0),
                         child: Text(
-                          "Product Name",
+                          product.category, // Gunakan kategori produk
                           style: TextStyle(
-                            fontSize: 24,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey.shade500,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 8.0, right: 8.0, bottom: 8),
+                        child: Text(
+                          product.name, // Gunakan nama produk
+                          style: const TextStyle(
+                            fontSize: 32,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -53,7 +92,7 @@ class _DetailShoesState extends State<DetailShoes> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Text(
-                          "Rp.5.000.000",
+                          'Rp.${product.price}', // Gunakan harga produk
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -83,9 +122,9 @@ class _DetailShoesState extends State<DetailShoes> {
                           color: Colors.grey[800],
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Text(
-                          "size: 40",
-                          style: TextStyle(
+                        child: Text(
+                          'size: ${product.size}', // Gunakan ukuran produk
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -101,9 +140,9 @@ class _DetailShoesState extends State<DetailShoes> {
                           color: Colors.grey[800],
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Text(
-                          "size: 40",
-                          style: TextStyle(
+                        child: Text(
+                          'size: ${product.size}', // Gunakan ukuran produk
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -132,7 +171,7 @@ class _DetailShoesState extends State<DetailShoes> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
-                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.",
+                  product.description, // Gunakan deskripsi produk
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey.shade700,
@@ -157,7 +196,7 @@ class _DetailShoesState extends State<DetailShoes> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 onPressed: () {},
-                child: Text(
+                child: const Text(
                   "Edit Shoes",
                   style: TextStyle(
                     fontSize: 16,
@@ -174,7 +213,11 @@ class _DetailShoesState extends State<DetailShoes> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              onPressed: () {},
+              onPressed: () {
+                BlocProvider.of<RemoteProductBloc>(context)
+                    .add(DeleteShoesById(id: productId));
+                    Navigator.pop(context);
+              },
               child: const Icon(
                 Icons.delete_outline,
                 color: Colors.white,

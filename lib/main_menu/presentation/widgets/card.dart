@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 
 Widget card(
+  String name,
+  int price,
+
   Function()? onTap,
 ) {
   return InkWell(
     onTap: onTap,
-    child: Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
+    child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 100,
+            height: 140,
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Colors.black,
+              color: Colors.grey[200],
               image: const DecorationImage(
                 image: AssetImage('assets/kids.png'),
                 fit: BoxFit.cover,
@@ -27,18 +25,18 @@ Widget card(
           ),
           SizedBox(height: 8),
           Text(
-            "Product Name",
+            name,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
           Text(
-            "Rp 100.000",
+            "Rp $price",
             style: TextStyle(fontSize: 14),
           ),
         ],
       ),
-    ),
+  
   );
 }

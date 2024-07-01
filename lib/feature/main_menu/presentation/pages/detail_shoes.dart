@@ -1,8 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:uas_pemmob/core/constant.dart';
 import 'package:uas_pemmob/feature/main_menu/domain/entities/product.dart';
 import 'package:uas_pemmob/feature/main_menu/presentation/bloc/remote/remote_product_bloc.dart';
 import 'package:uas_pemmob/feature/main_menu/presentation/bloc/remote/remote_product_event.dart';
+import 'package:uas_pemmob/feature/main_menu/presentation/bloc/remote/remote_product_state.dart';
+import 'package:uas_pemmob/feature/main_menu/presentation/pages/update_product.dart';
+import 'package:uas_pemmob/feature/main_menu/presentation/widgets/verif_delete.dart';
 
 class DetailShoes extends StatefulWidget {
   final ProductEntity product;
@@ -14,21 +22,60 @@ class DetailShoes extends StatefulWidget {
 }
 
 class _DetailShoesState extends State<DetailShoes> {
-  late String productId;
+  late int productId;
+  bool _isLoading = false;
+  bool isLove = false;
 
   @override
   void initState() {
     super.initState();
-    print(widget.product.id);
+    // print(widget.product.id);
     setState(() {
       productId = widget.product.id;
     });
-    print(productId);
+    // print(productId);
+  }
+
+  Future<void> _waitForBlocOperation(
+      RemoteProductBloc bloc, RemoteProductEvent event) async {
+    final completer = Completer<void>();
+    final subscription = bloc.stream.listen((state) {
+      if (state is RemoteProductDone || state is RemoteProductError) {
+        completer.complete();
+      }
+    });
+    bloc.add(event);
+    await completer.future;
+    await subscription.cancel();
+  }
+
+  void _onDeleteHighlight(ProductEntity highlight) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final bloc = BlocProvider.of<RemoteProductBloc>(context);
+
+    // Menunggu operasi AddHighlight selesai
+    await _waitForBlocOperation(bloc, DeleteShoesById(id: productId));
+
+    // Setelah AddHighlight selesai, dapatkan highlights yang tidak terpilih
+    await _waitForBlocOperation(bloc, FilterByCategory(category: 'women'));
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+      Navigator.pushNamed(context, '/main');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final product = widget.product;
+    final formattedPrice =
+        NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0)
+            .format(product.price);
     print(product.id);
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +83,8 @@ class _DetailShoesState extends State<DetailShoes> {
         automaticallyImplyLeading: true,
       ),
       body: SingleChildScrollView(
-        child: Padding(
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 100),
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,7 +104,7 @@ class _DetailShoesState extends State<DetailShoes> {
                   ),
                   image: DecorationImage(
                     image: NetworkImage(
-                        product.image), // Gunakan URL gambar dari produk
+                        '${Api}/uploads/${product.image}'), // Gunakan URL gambar dari produk
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -70,7 +118,8 @@ class _DetailShoesState extends State<DetailShoes> {
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0, left: 8.0),
                         child: Text(
-                          product.category, // Gunakan kategori produk
+                          product.category ??
+                              'category', // Gunakan kategori produk
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
@@ -82,7 +131,7 @@ class _DetailShoesState extends State<DetailShoes> {
                         padding: const EdgeInsets.only(
                             left: 8.0, right: 8.0, bottom: 8),
                         child: Text(
-                          product.name, // Gunakan nama produk
+                          product.name ?? 'name', // Gunakan nama produk
                           style: const TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -92,7 +141,7 @@ class _DetailShoesState extends State<DetailShoes> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Text(
-                          'Rp.${product.price}', // Gunakan harga produk
+                          formattedPrice, // Gunakan harga produk
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -102,11 +151,23 @@ class _DetailShoesState extends State<DetailShoes> {
                       ),
                     ],
                   ),
-                  const Icon(
-                    Icons.favorite_border,
-                    color: Colors.red,
-                    size: 30,
-                  )
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          isLove = !isLove;
+                        });
+                      },
+                      icon: isLove
+                          ? const Icon(
+                              Icons.favorite,
+                              color: Colors.red,
+                              size: 30,
+                            )
+                          : const Icon(
+                              Icons.favorite_border,
+                              color: Colors.red,
+                              size: 30,
+                            ))
                 ],
               ),
               Padding(
@@ -123,7 +184,7 @@ class _DetailShoesState extends State<DetailShoes> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          'size: ${product.size}', // Gunakan ukuran produk
+                          'stock: ${product.stock}', // Gunakan ukuran produk
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -171,7 +232,8 @@ class _DetailShoesState extends State<DetailShoes> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
-                  product.description, // Gunakan deskripsi produk
+                  product.description ??
+                      'description', // Gunakan deskripsi produk
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey.shade700,
@@ -195,7 +257,12 @@ class _DetailShoesState extends State<DetailShoes> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                onPressed: () {},
+                onPressed: () async {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EditProduct(product: product)));
+                },
                 child: const Text(
                   "Edit Shoes",
                   style: TextStyle(
@@ -213,11 +280,18 @@ class _DetailShoesState extends State<DetailShoes> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              onPressed: () {
-                BlocProvider.of<RemoteProductBloc>(context)
-                    .add(DeleteShoesById(id: productId));
-                    Navigator.pop(context);
-              },
+              onPressed: _isLoading
+                  ? null
+                  : () =>
+                      verifeDelete(context, () => _onDeleteHighlight(product)),
+
+              // BlocProvider.of<RemoteProductBloc>(context)
+              //     .add(DeleteShoesById(id: productId));
+              // BlocProvider.of<RemoteProductBloc>(context)
+              //     .add(FilterByCategory(category: "women"));
+
+              // Navigator.pop(context);
+              // },
               child: const Icon(
                 Icons.delete_outline,
                 color: Colors.white,

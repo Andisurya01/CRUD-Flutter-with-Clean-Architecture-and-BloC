@@ -26,5 +26,7 @@ class RemoteAuthDone extends RemoteAuthState {
 }
 
 class RemoteAuthError extends RemoteAuthState {
-  const RemoteAuthError(Object error) : super(error: error);
+  final String message;
+
+  RemoteAuthError(this.message);
 }

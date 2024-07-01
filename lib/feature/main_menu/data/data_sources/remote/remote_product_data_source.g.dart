@@ -12,7 +12,7 @@ class _RemoteProductDataSource implements RemoteProductDataSource {
   _RemoteProductDataSource(
     this._dio, {
     this.baseUrl,
-}) {
+  }) {
     baseUrl ??= Api;
   }
 
@@ -58,7 +58,7 @@ class _RemoteProductDataSource implements RemoteProductDataSource {
   }
 
   @override
-  Future<HttpResponse<ProductModels>> getShoesById(String id) async {
+  Future<HttpResponse<ProductModels>> getShoesById(int id) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -86,7 +86,7 @@ class _RemoteProductDataSource implements RemoteProductDataSource {
   }
 
   @override
-  Future<HttpResponse<void>> deleteShoesById(String id) async {
+  Future<HttpResponse<void>> deleteShoesById(int id) async {
     final SharedPreferencesHelper _prefsHelper = SharedPreferencesHelper();
     final token = await _prefsHelper.getToken();
     final _extra = <String, dynamic>{};
@@ -117,6 +117,20 @@ class _RemoteProductDataSource implements RemoteProductDataSource {
   @override
   Future<HttpResponse<void>> addShoes(ProductModels product) async {
     final SharedPreferencesHelper _prefsHelper = SharedPreferencesHelper();
+    final formData = FormData();
+    product.toJson().forEach((key, value) {
+      formData.fields.add(MapEntry(key, value.toString()));
+    });
+    print('imageFile datasaus: ${product.imageFile}');
+    if (product.imageFile != null) {
+      formData.files.add(MapEntry(
+        'image',
+        await MultipartFile.fromFile(product.imageFile!.path,
+            filename: product.imageFile!.path.split('/').last),
+      ));
+    }
+    print('formData: $formData');
+
     final token = await _prefsHelper.getToken();
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -133,7 +147,7 @@ class _RemoteProductDataSource implements RemoteProductDataSource {
               _dio.options,
               '/shoes',
               queryParameters: queryParameters,
-              data: _data,
+              data: formData,
             )
             .copyWith(
                 baseUrl: _combineBaseUrls(
@@ -146,10 +160,23 @@ class _RemoteProductDataSource implements RemoteProductDataSource {
 
   @override
   Future<HttpResponse<void>> updateShoes(
-    String id,
+    int id,
     ProductModels product,
   ) async {
     final SharedPreferencesHelper _prefsHelper = SharedPreferencesHelper();
+    final formData = FormData();
+    product.toJson().forEach((key, value) {
+      formData.fields.add(MapEntry(key, value.toString()));
+    });
+    print('imageFile datasaus: ${product.imageFile}');
+    if (product.imageFile != null) {
+      formData.files.add(MapEntry(
+        'image',
+        await MultipartFile.fromFile(product.imageFile!.path,
+            filename: product.imageFile!.path.split('/').last),
+      ));
+    }
+    print('formData: $formData');
     final token = await _prefsHelper.getToken();
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -166,7 +193,7 @@ class _RemoteProductDataSource implements RemoteProductDataSource {
               _dio.options,
               '/shoes/${id}',
               queryParameters: queryParameters,
-              data: _data,
+              data: formData,
             )
             .copyWith(
                 baseUrl: _combineBaseUrls(

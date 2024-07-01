@@ -1,3 +1,5 @@
+import 'package:uas_pemmob/feature/main_menu/domain/entities/product.dart';
+
 abstract class RemoteProductEvent {
   const RemoteProductEvent();
 
@@ -5,7 +7,7 @@ abstract class RemoteProductEvent {
   List<Object> get props => [];
 }
 
-class GetShoes extends RemoteProductEvent{
+class GetShoes extends RemoteProductEvent {
   final int limit;
   final int offset;
 
@@ -25,7 +27,7 @@ class FilterByCategory extends RemoteProductEvent {
 }
 
 class GetShoesById extends RemoteProductEvent {
-  final String id;
+  final int id;
 
   GetShoesById({required this.id});
 
@@ -34,10 +36,29 @@ class GetShoesById extends RemoteProductEvent {
 }
 
 class DeleteShoesById extends RemoteProductEvent {
-  final String id;
+  final int id;
 
   DeleteShoesById({required this.id});
 
   @override
   List<Object> get props => [id];
+}
+
+class AddShoes extends RemoteProductEvent {
+  final ProductEntity shoes;
+
+  AddShoes({required this.shoes});
+
+  @override
+  List<Object> get props => [shoes];
+}
+
+class UpdateShoes extends RemoteProductEvent {
+  final int id;
+  final ProductEntity shoes;
+
+  UpdateShoes({required this.id,required this.shoes});
+
+  @override
+  List<Object> get props => [id,shoes];
 }

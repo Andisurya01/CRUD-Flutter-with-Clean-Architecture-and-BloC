@@ -3,7 +3,7 @@ import 'package:uas_pemmob/feature/auth/data/models/auth.dart';
 import 'package:uas_pemmob/feature/main_menu/data/models/product.dart';
 
 class AuthEntity extends Equatable {
-  final String? id;
+  final int? id;
   final String? user_name;
   final String? email;
   final String? password;

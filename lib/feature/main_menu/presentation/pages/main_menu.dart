@@ -19,7 +19,7 @@ class MainMenu extends StatefulWidget {
 
 class _MainMenuState extends State<MainMenu> {
   final SharedPreferencesHelper _prefsHelper = SharedPreferencesHelper();
-
+  String category = 'women';
   _getToken() async {
     final prefs = await SharedPreferences.getInstance();
     print('token di menu : ${prefs.getString('auth_token')}');
@@ -29,40 +29,31 @@ class _MainMenuState extends State<MainMenu> {
   void initState() {
     super.initState();
     _getToken();
+    BlocProvider.of<RemoteProductBloc>(context).add(FilterByCategory(
+        category: "women")); // Sesuaikan dengan email yang tepat
   }
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      BlocProvider.of<RemoteProductBloc>(context).add(FilterByCategory(
-          category: "Category1")); // Sesuaikan dengan email yang tepat
-    });
     return Scaffold(
       appBar: AppBar(
         title: Image.asset('assets/logo.png', height: 30),
         automaticallyImplyLeading: false,
         actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return CustomPopup(
-                      title: 'Welcome!',
-                      message: 'This is a custom popup.',
-                    );
-                  },
-                );
-              },
-              icon: const Icon(Icons.person),
-            ),
-          )
+          IconButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return CustomPopup(
+                    title: 'Logout?',
+                    message: 'Apaka kamu yakin ingin logout?',
+                  );
+                },
+              );
+            },
+            icon: const Icon(Icons.logout_rounded),
+          ),
         ],
       ),
       body: BlocBuilder<RemoteProductBloc, RemoteProductState>(
@@ -71,105 +62,156 @@ class _MainMenuState extends State<MainMenu> {
             return const Center(child: CircularProgressIndicator());
           } else if (state is RemoteProductDone) {
             return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    carousel(),
-                    const SizedBox(height: 16),
-                    const Text(
-                      "Category",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            BlocProvider.of<RemoteProductBloc>(context)
-                                .add(FilterByCategory(category: "Category1"));
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 16),
-                            margin: const EdgeInsets.only(right: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[900],
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Text(
-                              "Woman",
-                              style: TextStyle(color: Colors.white),
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  BlocProvider.of<RemoteProductBloc>(context)
+                      .add(FilterByCategory(category: "women"));
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 50),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      carousel(),
+                      const SizedBox(height: 16),
+                      const Text(
+                        "Category",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              BlocProvider.of<RemoteProductBloc>(context)
+                                  .add(FilterByCategory(category: "women"));
+                              setState(() {
+                                category = 'women';
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              margin: const EdgeInsets.only(right: 8),
+                              decoration: BoxDecoration(
+                                color: category == 'women'
+                                    ? Colors.grey[900]
+                                    : Colors.grey[300],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                "women",
+                                style: TextStyle(
+                                  color: category == 'women'
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            BlocProvider.of<RemoteProductBloc>(context)
-                                .add(FilterByCategory(category: "Category2"));
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 16),
-                            margin: const EdgeInsets.only(right: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(10),
+                          GestureDetector(
+                            onTap: () {
+                              BlocProvider.of<RemoteProductBloc>(context)
+                                  .add(FilterByCategory(category: "men"));
+                              setState(() {
+                                category = 'men';
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              margin: const EdgeInsets.only(right: 8),
+                              decoration: BoxDecoration(
+                                color: category == 'men'
+                                    ? Colors.grey[900]
+                                    : Colors.grey[300],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                "men",
+                                style: TextStyle(
+                                  color: category == 'men'
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              ),
                             ),
-                            child: const Text("Man"),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            BlocProvider.of<RemoteProductBloc>(context)
-                                .add(FilterByCategory(category: "Category3"));
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 16),
-                            margin: const EdgeInsets.only(right: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(10),
+                          GestureDetector(
+                            onTap: () {
+                              BlocProvider.of<RemoteProductBloc>(context)
+                                  .add(FilterByCategory(category: "kids"));
+                              setState(() {
+                                category = 'kids';
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              margin: const EdgeInsets.only(right: 8),
+                              decoration: BoxDecoration(
+                                color: category == 'kids'
+                                    ? Colors.grey[900]
+                                    : Colors.grey[300],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                "kidss",
+                                style: TextStyle(
+                                  color: category == 'kids'
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              ),
                             ),
-                            child: const Text("Kids"),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    GridView.count(
-                      crossAxisCount: 2, // Number of columns
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: List.generate(state.products.length, (index) {
-                        final product = state.products[index];
-                        final image = product.image;
-                        final name = product.name;
-                        final price = product.price;
-                        return card(name, price, () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      DetailShoes(product: product)));
-                          // Navigator.pushNamed(context, '/detail_shoes',
-                          //     product: product);
-                        });
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      LayoutBuilder(builder: (context, constraints) {
+                        int crossAxisCount = constraints.maxWidth < 600 ? 1 : 2;
+                        return GridView.count(
+                          crossAxisCount: crossAxisCount, // Number of columns
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          children:
+                              List.generate(state.products.length, (index) {
+                            final product = state.products[index];
+                            final image =
+                                product.image ?? 'assets/no_image.png';
+                            final name = product.name ?? 'No Name';
+                            final price = product.price ?? 000;
+                            return card(image, name, price, () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          DetailShoes(product: product)));
+                              // Navigator.pushNamed(context, '/detail_shoes',
+                              //     product: product);
+                            });
+                          }),
+                          // Each tile will take up 2 columns and adjust its height to fit its content
+                        );
                       }),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
           } else if (state is RemoteProductError) {
-            return Center(child: Text('Error: ${state.error}'));
+            return RefreshIndicator(
+                onRefresh: () async {
+                  BlocProvider.of<RemoteProductBloc>(context)
+                      .add(GetShoes(limit: 100, offset: 0));
+                },
+                child: Center(child: Text('Error: ${state.error}')));
           } else {
             return const Center(child: Text('Unknown state'));
           }

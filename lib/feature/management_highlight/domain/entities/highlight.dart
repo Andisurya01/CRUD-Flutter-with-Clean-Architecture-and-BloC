@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class HighlightEntity extends Equatable {
-  final String id;
+  final int id;
   final String name;
   final String description;
   final int price;

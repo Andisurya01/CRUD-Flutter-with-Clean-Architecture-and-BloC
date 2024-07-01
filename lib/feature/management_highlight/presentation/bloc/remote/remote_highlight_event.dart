@@ -25,7 +25,7 @@ class GetNonHighlights extends RemoteHighlightEvent{
 }
 
 class DeleteHighlightById extends RemoteHighlightEvent {
-  final String id;
+  final int id;
 
   DeleteHighlightById({required this.id});
 
@@ -34,7 +34,7 @@ class DeleteHighlightById extends RemoteHighlightEvent {
 }
 
 class AddHighlight extends RemoteHighlightEvent {
-  final String id;
+  final int id;
 
   AddHighlight({required this.id});
 

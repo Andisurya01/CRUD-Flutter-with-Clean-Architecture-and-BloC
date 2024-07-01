@@ -2,6 +2,7 @@ import 'package:retrofit/retrofit.dart';
 import 'package:uas_pemmob/core/constant.dart';
 import 'package:dio/dio.dart';
 import 'package:uas_pemmob/feature/main_menu/data/models/product.dart';
+import 'package:uas_pemmob/feature/main_menu/domain/entities/product.dart';
 import 'package:uas_pemmob/util/shared_preferense.dart';
 
 part 'remote_product_data_source.g.dart';
@@ -18,12 +19,12 @@ abstract class RemoteProductDataSource {
 
   @GET("/shoes/{id}")
   Future<HttpResponse<ProductModels>> getShoesById(
-    @Path("id") String id,
+    @Path("id") int id,
   );
 
   @DELETE("/shoes/{id}")
   Future<HttpResponse<void>> deleteShoesById(
-    @Path("id") String id,
+    @Path("id") int id,
   );
 
   @POST("/shoes")
@@ -33,7 +34,7 @@ abstract class RemoteProductDataSource {
 
   @PUT("/shoes/{id}")
   Future<HttpResponse<void>> updateShoes(
-    @Path("id") String id,
+    @Path("id") int id,
     @Body() ProductModels product,
   );
 }

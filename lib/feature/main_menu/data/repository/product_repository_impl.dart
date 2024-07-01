@@ -34,7 +34,7 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  Future<DataState<ProductEntity>> getShoesById(String id) async {
+  Future<DataState<ProductEntity>> getShoesById(int id) async {
     try {
       final httpResponse = await productDataSource.getShoesById(id);
       if (httpResponse.response.statusCode == 200) {
@@ -54,7 +54,7 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  Future<DataState<void>> deleteShoesById(String id) async {
+  Future<DataState<void>> deleteShoesById(int id) async {
     try {
       final httpResponse = await productDataSource.deleteShoesById(id);
       if (httpResponse.response.statusCode == 200) {
@@ -77,7 +77,7 @@ class ProductRepositoryImpl implements ProductRepository {
   Future<DataState<void>> addShoes(ProductEntity product) async {
     try {
       final httpResponse = await productDataSource.addShoes(product.toModel());
-      if (httpResponse.response.statusCode == 200) {
+      if (httpResponse.response.statusCode == 201) {
         return DataSuccess(httpResponse.data);
       } else {
         return DataFailed(
@@ -94,10 +94,10 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  Future<DataState<void>> updateShoes(String id, ProductEntity product) async {
+  Future<DataState<void>> updateShoes(int id, ProductEntity product) async {
     try {
       final httpResponse = await productDataSource.updateShoes(id, product.toModel());
-      if (httpResponse.response.statusCode == 200) {
+      if (httpResponse.response.statusCode == 201) {
         return DataSuccess(httpResponse.data);
       } else {
         return DataFailed(

@@ -27,6 +27,7 @@ class _AuthDataSource implements AuthDataSource {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body.toJson());
+    print('body di datasource auth $_data');
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<HttpResponse<AuthModel>>(Options(
       method: 'POST',
@@ -44,11 +45,21 @@ class _AuthDataSource implements AuthDataSource {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    print('result di datasource auth $_result');
-    final value = AuthModel.fromJson(_result.data!);
-    print('value di datasource auth $value');
-    final httpResponse = HttpResponse(value, _result);
-    return httpResponse;
+    print(_result.data);
+    if (_result.statusCode == 200) {
+      final value = AuthModel.fromJson(_result.data!);
+      print('value di datasource auth $value');
+      final httpResponse = HttpResponse(value, _result);
+      return httpResponse;
+    } else {
+      print('error di datasource auth ${_result}');
+      final message = _result.data?['message'] ?? 'Unknown error';
+      throw DioException(
+        requestOptions: _result.requestOptions,
+        response: _result,
+        error: message,
+      );
+    }
   }
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {

@@ -25,7 +25,7 @@ class _RemoteHighlightDataSource implements RemoteHighlightDataSource {
     int limit,
     int offset,
   ) async {
-        final SharedPreferencesHelper _prefsHelper = SharedPreferencesHelper();
+    final SharedPreferencesHelper _prefsHelper = SharedPreferencesHelper();
     final token = await _prefsHelper.getToken();
 
     final _extra = <String, dynamic>{};
@@ -64,7 +64,7 @@ class _RemoteHighlightDataSource implements RemoteHighlightDataSource {
     int limit,
     int offset,
   ) async {
-        final SharedPreferencesHelper _prefsHelper = SharedPreferencesHelper();
+    final SharedPreferencesHelper _prefsHelper = SharedPreferencesHelper();
     final token = await _prefsHelper.getToken();
 
     final _extra = <String, dynamic>{};
@@ -99,10 +99,10 @@ class _RemoteHighlightDataSource implements RemoteHighlightDataSource {
   }
 
   @override
-  Future<HttpResponse<HighlightModel>> getHighlightById(String id) async {
-        final SharedPreferencesHelper _prefsHelper = SharedPreferencesHelper();
+  Future<HttpResponse<HighlightModel>> getHighlightById(int id) async {
+    final SharedPreferencesHelper _prefsHelper = SharedPreferencesHelper();
     final token = await _prefsHelper.getToken();
-final _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
@@ -129,10 +129,10 @@ final _extra = <String, dynamic>{};
   }
 
   @override
-  Future<HttpResponse<void>> deleteHighlightById(String id) async {
-        final SharedPreferencesHelper _prefsHelper = SharedPreferencesHelper();
+  Future<HttpResponse<void>> deleteHighlightById(int id) async {
+    final SharedPreferencesHelper _prefsHelper = SharedPreferencesHelper();
     final token = await _prefsHelper.getToken();
-final _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
@@ -158,10 +158,10 @@ final _extra = <String, dynamic>{};
   }
 
   @override
-  Future<HttpResponse<void>> addHighlight(String id) async {
-        final SharedPreferencesHelper _prefsHelper = SharedPreferencesHelper();
+  Future<HttpResponse<void>> addHighlight(int id) async {
+    final SharedPreferencesHelper _prefsHelper = SharedPreferencesHelper();
     final token = await _prefsHelper.getToken();
-final _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
@@ -182,6 +182,7 @@ final _extra = <String, dynamic>{};
               _dio.options.baseUrl,
               baseUrl,
             ))));
+    print(_result);
     final httpResponse = HttpResponse(null, _result);
     return httpResponse;
   }

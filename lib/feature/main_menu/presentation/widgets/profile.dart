@@ -15,9 +15,13 @@ class CustomPopup extends StatelessWidget {
     await _prefsHelper.removeToken();
     Navigator.pushReplacementNamed(context, '/login');
   }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
       alignment: Alignment.center,
       backgroundColor: Colors.white,
       titleTextStyle: const TextStyle(color: Colors.black, fontSize: 24),
@@ -25,16 +29,15 @@ class CustomPopup extends StatelessWidget {
       title: Text(title),
       content: Text(message),
       actions: <Widget>[
-        TextButton(
-          child: Text(
-            'Logout',
-            style: TextStyle(
-              color: Colors.red,
-            ),
+        FilledButton(
+          // style: ButtonStyle(
+          //   backgroundColor: C,
+          // ),
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.grey[900]),
           ),
-          onPressed: () {
-            _logout(context);// Tutup popup saat tombol OK ditekan
-          },
+          onPressed: () => _logout(context),
+          child: const Text('Logout'),
         ),
       ],
     );

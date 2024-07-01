@@ -6,30 +6,42 @@ import 'package:uas_pemmob/feature/auth/presentation/bloc/remote/remote_auth_eve
 import 'package:uas_pemmob/feature/auth/presentation/bloc/remote/remote_auth_state.dart';
 import 'package:uas_pemmob/util/shared_preferense.dart';
 
-class RemoteAuthBloc extends Bloc<RemoteAuthEvent,RemoteAuthState>{
+class RemoteAuthBloc extends Bloc<RemoteAuthEvent, RemoteAuthState> {
   final LoginUseCase loginUseCase;
 
-  RemoteAuthBloc(this.loginUseCase) : super(RemoteAuthInitial()){
+  RemoteAuthBloc(this.loginUseCase) : super(const RemoteAuthInitial()) {
     on<Login>(onLogin);
   }
 
   void onLogin(Login event, Emitter<RemoteAuthState> emit) async {
     emit(const RemoteAuthLoading());
-    final dataState = await loginUseCase.call(params: AuthEntity(user_name: event.user_name, password: event.password));
-    print('token ${dataState.data!.token}');
-    final SharedPreferencesHelper _prefsHelper = SharedPreferencesHelper();
-    String token = dataState.data!.token!;
-    if (dataState is DataSuccess) {
-      if (dataState.data != null) {
-        emit(RemoteAuthDone(dataState.data!));
-        await _prefsHelper.saveToken(token);
-        
-      } else {
-        emit(const RemoteAuthError('Data is empty'));
+
+    try {
+      final dataState = await loginUseCase.call(
+          params:
+              AuthEntity(user_name: event.user_name, password: event.password));
+      print(dataState.data);
+      if (dataState is DataSuccess) {
+        if (dataState.data != null) {
+          final token = dataState.data?.token;
+          if (token != null) {
+            final SharedPreferencesHelper _prefsHelper =
+                SharedPreferencesHelper();
+            await _prefsHelper.saveToken(token);
+            emit(RemoteAuthDone(dataState.data!));
+          } else {
+            emit(RemoteAuthError('Token is null'));
+          }
+        } else {
+          emit(RemoteAuthError('Data is empty'));
+        }
+      } else if (dataState is DataFailed) {
+        print(dataState.error);
+        emit(RemoteAuthError(dataState.error!.toString()));
       }
-    } else if (dataState is DataFailed) {
-      print(dataState.error!);
-      emit(RemoteAuthError(dataState.error!));
+    } catch (error) {
+      print(error);
+      emit(RemoteAuthError('An unexpected error occurred: ${error}'));
     }
   }
 }

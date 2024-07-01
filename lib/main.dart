@@ -16,7 +16,7 @@ import 'package:uas_pemmob/feature/management_highlight/presentation/bloc/remote
 import 'package:uas_pemmob/feature/management_highlight/presentation/pages/list_product.dart';
 import 'package:uas_pemmob/feature/management_highlight/presentation/pages/main_highlight.dart';
 import 'package:uas_pemmob/feature/main_menu/presentation/pages/add_product.dart';
-import 'package:uas_pemmob/feature/main_menu/presentation/pages/edit_product.dart';
+import 'package:uas_pemmob/feature/main_menu/presentation/pages/update_product.dart';
 import 'package:uas_pemmob/splashscreen.dart';
 
 void main() {
@@ -32,11 +32,11 @@ class MainApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<RemoteProductBloc>(
-          create: (context) => GetIt.instance<RemoteProductBloc>()
-            ..add(
-              GetShoes(limit: 10, offset: 0),
+            create: (context) => GetIt.instance<RemoteProductBloc>()
+            // ..add(
+            //   GetShoes(limit: 10, offset: 0),
+            // ),
             ),
-        ),
         // BlocProvider<RemoteProductBloc>(
         //   create: (context) => GetIt.instance<RemoteProductBloc>()
         //     ..add(
@@ -46,33 +46,33 @@ class MainApp extends StatelessWidget {
         // BlocProvider<RemoteProductBloc>(
         //   create: (context) => GetIt.instance<RemoteProductBloc>()
         //   .add(DeleteShoesById(id: id)));
+        // BlocProvider<RemoteHighlightBloc>(
+        //   create: (context) => GetIt.instance<RemoteHighlightBloc>()
+        //     ..add(
+        //       GetHighlights(limit: 100, offset: 0),
+        //     ),
+        // ),
+        // BlocProvider<RemoteHighlightBloc>(
+        //   create: (context) => GetIt.instance<RemoteHighlightBloc>()
+        //     ..add(
+        //       GetNonHighlights(limit: 100, offset: 0),
+        //     ),
+        // ),
+        // BlocProvider<RemoteHighlightBloc>(
+        //   create: (context) => GetIt.instance<RemoteHighlightBloc>()
+        //     // ..add(
+        //     //   DeleteHighlightById(id: ''),
+        //     // ),
+        // ),
         BlocProvider<RemoteHighlightBloc>(
-          create: (context) => GetIt.instance<RemoteHighlightBloc>()
-            ..add(
-              GetHighlights(limit: 100, offset: 0),
+            create: (context) => GetIt.instance<RemoteHighlightBloc>()
+            // ..add(
+            //   AddHighlight(id: ''),
+            // ),
             ),
-        ),
-        BlocProvider<RemoteHighlightBloc>(
-          create: (context) => GetIt.instance<RemoteHighlightBloc>()
-            ..add(
-              GetNonHighlights(limit: 100, offset: 0),
-            ),
-        ),
-        BlocProvider<RemoteHighlightBloc>(
-          create: (context) => GetIt.instance<RemoteHighlightBloc>()
-            ..add(
-              DeleteHighlightById(id: ''),
-            ),
-        ),
-        BlocProvider<RemoteHighlightBloc>(
-          create: (context) => GetIt.instance<RemoteHighlightBloc>()
-            ..add(
-              AddHighlight(id: ''),
-            ),
-        ),
         BlocProvider<RemoteAuthBloc>(
-            create: (context) => GetIt.instance<RemoteAuthBloc>()
-              ..add(Login(user_name: 'andi', password: 'password123')))
+          create: (context) => GetIt.instance<RemoteAuthBloc>(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -88,10 +88,14 @@ class MainApp extends StatelessWidget {
           //   final product = ModalRoute.of(context)!.settings.arguments as ProductEntity;
           //   return DetailShoes(product: product);
           // } ,
-          '/main_highlight': (context) => const MainHiglight(),
+          '/main_highlight': (context) => const MainHighlight(),
           '/list_product': (context) => const ListProduct(),
-          '/edit_product': (context) => const EditProduct(),
-          '/add_product': (context) => const AddProduct()
+          '/edit_product': (context) {
+            final product =
+                ModalRoute.of(context)!.settings.arguments as ProductEntity;
+            return EditProduct(product: product);
+          },
+          '/add_product': (context) => const AddProductScreen()
         },
       ),
     );

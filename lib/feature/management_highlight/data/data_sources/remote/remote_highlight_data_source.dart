@@ -24,16 +24,16 @@ abstract class RemoteHighlightDataSource {
 
   @GET("/highlight/{id}")
   Future<HttpResponse<HighlightModel>> getHighlightById(
-    @Path("id") String id,
+    @Path("id") int id,
   );
 
   @DELETE("/highlight/remove/{id}")
   Future<HttpResponse<void>> deleteHighlightById(
-    @Path("id") String id,
+    @Path("id") int id,
   );
 
   @POST("/highlight/add/{id}")
   Future<HttpResponse<void>> addHighlight(
-    @Path("id") String id,
+    @Path("id") int id,
   );
 }

@@ -49,10 +49,10 @@ class HighlightRepositoryImpl implements HighlightRepository {
   }
 
   @override
-  Future<DataState<void>> addHighlight(String id) async {
+  Future<DataState<void>> addHighlight(int id) async {
     try {
       final httpResponse = await dataSource.addHighlight(id);
-      if (httpResponse.response.statusCode == 200) {
+      if (httpResponse.response.statusCode == 201) {
         return DataSuccess(httpResponse.data);
       } else {
         return DataFailed(DioException(
@@ -67,7 +67,7 @@ class HighlightRepositoryImpl implements HighlightRepository {
   }
 
   @override
-  Future<DataState<void>> deleteHighlightById(String id) async {
+  Future<DataState<void>> deleteHighlightById(int id) async {
     try {
       final httpResponse = await dataSource.deleteHighlightById(id);
       if (httpResponse.response.statusCode == 200) {
@@ -85,7 +85,7 @@ class HighlightRepositoryImpl implements HighlightRepository {
   }
 
   @override
-  Future<DataState<HighlightEntity>> getHighlightById(String id) async {
+  Future<DataState<HighlightEntity>> getHighlightById(int id) async {
     try {
       final httpResponse = await dataSource.getHighlightById(id);
       if (httpResponse.response.statusCode == 200) {
